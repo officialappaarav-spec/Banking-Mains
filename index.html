@@ -258,6 +258,9 @@
             window.location.href = url;
         }
     </script>
-
+<style>body{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}</style>
+<script>
+  ['contextmenu', 'copy', 'cut', 'dragstart'].forEach(e => document.addEventListener(e, el => el.preventDefault()));
+</script>
 </body>
 </html>
