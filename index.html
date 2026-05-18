@@ -125,10 +125,47 @@
             border-radius: 12px;
             font-weight: 600;
             transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
         }
 
         .card:hover .btn {
             transform: scale(1.05);
+        }
+
+        /* Form elements */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .auth-form input:focus {
+            border-color: var(--primary);
         }
 
         @media (max-width: 768px) {
@@ -144,7 +181,34 @@
         <p>Master Your Preparation with Precision</p>
     </header>
 
-    <div class="container">
+    <!-- STEP 1: INITIAL LET'S START SCREEN -->
+    <div id="startScreen" class="card" style="width: 100%; max-width: 450px;" onclick="initiatePlatform()">
+        <div class="icon-box">🚀</div>
+        <h2>Ready to Begin?</h2>
+        <p>Click below to enter the secure examination console environment.</p>
+        <button type="button" class="btn" style="width: 100%; padding: 1rem;">Let's Start</button>
+    </div>
+
+    <!-- STEP 2: SIGN UP SCREEN (Hidden initially) -->
+    <div id="authScreen" class="card" style="display: none; width: 100%; max-width: 400px; cursor: default;">
+        <div class="icon-box">🔐</div>
+        <h2>Create Account</h2>
+        <p>Please enter your details to gain access to the tests.</p>
+        <form class="auth-form" onsubmit="saveUserData(event)">
+            <div class="form-group">
+                <label for="username">Full Name</label>
+                <input type="text" id="username" required placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+                <label for="userphone">Phone Number</label>
+                <input type="tel" id="userphone" required pattern="[0-9]{10,}" placeholder="Enter phone number">
+            </div>
+            <button type="submit" class="btn" style="margin-top: 1rem; width: 100%;">Sign Up & Proceed</button>
+        </form>
+    </div>
+
+    <!-- STEP 3: MAIN DASHBOARD OPTIONS (Hidden initially) -->
+    <div id="mainContent" class="container" style="display: none;">
         <div class="card" onclick="navigateTo('clerk.html')">
             <div class="icon-box">📝</div>
             <h2>Clerk Mains</h2>
@@ -161,8 +225,58 @@
     </div>
 
     <script>
+        // Triggered exclusively by the user click on the first screen
+        function initiatePlatform() {
+            launchFullscreen(document.documentElement);
+            
+            // Hide the initial starting screen immediately
+            document.getElementById('startScreen').style.display = 'none';
+            
+            // Evaluate local storage credentials setup
+            checkUserStatus();
+        }
+
+        // Cross-browser Fullscreen Activator
+        function launchFullscreen(element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) { // Firefox
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) { // IE/Edge
+                element.msRequestFullscreen();
+            }
+        }
+
+        function checkUserStatus() {
+            const savedName = localStorage.getItem('userName');
+            const savedPhone = localStorage.getItem('userPhone');
+
+            if (savedName && savedPhone) {
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'flex';
+            } else {
+                document.getElementById('mainContent').style.display = 'none';
+                document.getElementById('authScreen').style.display = 'block';
+            }
+        }
+
+        function saveUserData(event) {
+            event.preventDefault();
+            
+            const nameInput = document.getElementById('username').value.trim();
+            const phoneInput = document.getElementById('userphone').value.trim();
+
+            if(nameInput && phoneInput) {
+                localStorage.setItem('userName', nameInput);
+                localStorage.setItem('userPhone', phoneInput);
+                
+                checkUserStatus();
+            }
+        }
+
         function navigateTo(url) {
-            // Adding a small delay for the click ripple effect feel (optional)
             console.log("Redirecting to: " + url);
             window.location.href = url;
         }
