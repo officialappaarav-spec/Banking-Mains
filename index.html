@@ -133,7 +133,7 @@
             transform: scale(1.05);
         }
 
-        /* Form elements */
+        /* Form specific additions matching your theme */
         .auth-form {
             display: flex;
             flex-direction: column;
@@ -181,15 +181,7 @@
         <p>Master Your Preparation with Precision</p>
     </header>
 
-    <!-- STEP 1: INITIAL LET'S START SCREEN -->
-    <div id="startScreen" class="card" style="width: 100%; max-width: 450px;" onclick="initiatePlatform()">
-        <div class="icon-box">🚀</div>
-        <h2>Ready to Begin?</h2>
-        <p>Click below to enter the secure examination console environment.</p>
-        <button type="button" class="btn" style="width: 100%; padding: 1rem;">Let's Start</button>
-    </div>
-
-    <!-- STEP 2: SIGN UP SCREEN (Hidden initially) -->
+    <!-- Sign Up Screen Box -->
     <div id="authScreen" class="card" style="display: none; width: 100%; max-width: 400px; cursor: default;">
         <div class="icon-box">🔐</div>
         <h2>Create Account</h2>
@@ -203,11 +195,11 @@
                 <label for="userphone">Phone Number</label>
                 <input type="tel" id="userphone" required pattern="[0-9]{10,}" placeholder="Enter phone number">
             </div>
-            <button type="submit" class="btn" style="margin-top: 1rem; width: 100%;">Sign Up & Proceed</button>
+            <button type="submit" class="btn" style="margin-top: 1rem; width: 100%;">Sign Up & Start</button>
         </form>
     </div>
 
-    <!-- STEP 3: MAIN DASHBOARD OPTIONS (Hidden initially) -->
+    <!-- Main Content Container (Clerk / PO options) -->
     <div id="mainContent" class="container" style="display: none;">
         <div class="card" onclick="navigateTo('clerk.html')">
             <div class="icon-box">📝</div>
@@ -225,53 +217,38 @@
     </div>
 
     <script>
-        // Triggered exclusively by the user click on the first screen
-        function initiatePlatform() {
-            launchFullscreen(document.documentElement);
-            
-            // Hide the initial starting screen immediately
-            document.getElementById('startScreen').style.display = 'none';
-            
-            // Evaluate local storage credentials setup
+        // Check for existing data as soon as the page scripts load
+        document.addEventListener("DOMContentLoaded", function() {
             checkUserStatus();
-        }
-
-        // Cross-browser Fullscreen Activator
-        function launchFullscreen(element) {
-            if (element.requestFullscreen) {
-                element.requestFullscreen();
-            } else if (element.mozRequestFullScreen) { // Firefox
-                element.mozRequestFullScreen();
-            } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
-                element.webkitRequestFullscreen();
-            } else if (element.msRequestFullscreen) { // IE/Edge
-                element.msRequestFullscreen();
-            }
-        }
+        });
 
         function checkUserStatus() {
             const savedName = localStorage.getItem('userName');
             const savedPhone = localStorage.getItem('userPhone');
 
             if (savedName && savedPhone) {
+                // User details exist, show tests dashboard
                 document.getElementById('authScreen').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'flex';
             } else {
+                // User details missing, show signup structure
                 document.getElementById('mainContent').style.display = 'none';
                 document.getElementById('authScreen').style.display = 'block';
             }
         }
 
         function saveUserData(event) {
-            event.preventDefault();
+            event.preventDefault(); // Stop standard form reloading
             
             const nameInput = document.getElementById('username').value.trim();
             const phoneInput = document.getElementById('userphone').value.trim();
 
             if(nameInput && phoneInput) {
+                // Save explicitly into basic keys so other pages can easily pull them
                 localStorage.setItem('userName', nameInput);
                 localStorage.setItem('userPhone', phoneInput);
                 
+                // Switch interface components
                 checkUserStatus();
             }
         }
